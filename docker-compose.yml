@@ -1,0 +1,24 @@
+services:
+  grafana:
+    build: .
+    ports: 
+      - "3000:3000"
+  prometheus:
+    image: prom/prometheus
+    ports: 
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - github-exporter
+  github-exporter:
+    image: jkroepke/github_exporter
+    tty: true
+    stdin_open: true
+    expose:
+      - 9171
+    ports:
+      - 9171:9171
+    environment:
+      - GITHUB_EXPORTER_REPOSITORY=hmiyado/kottage-front,hmiyado/ktor-csrf-protection
+      - GITHUB_EXPORTER_TOKEN=${GITHUB_TOKEN}
